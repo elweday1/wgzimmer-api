@@ -17,6 +17,12 @@ export const NotificationSchema = v.object({
 
 export const Schema = v.union([MessageSchema, NotificationSchema]);
 
+const headers = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "*",
+  "Access-Control-Allow-Headers": "*",
+}
 
 export interface Env {
   MY_CHAT_ID: string;
@@ -37,11 +43,12 @@ export default {
       return Response.redirect("https://drive.google.com/file/d/18dNMu9h8MxWmr5pUI8QUCC7gs-SnW_2G/view", 302);
     }
 
+
     const requestData = await request.json();
     const { success, output: msg, issues } = v.safeParse(Schema, requestData)
 
     if (!success) {
-      return new Response(JSON.stringify(issues.flat()), { status: 400 });
+      return new Response(JSON.stringify(issues.flat()), { status: 400, headers });
     }
 
     if (msg.type === "notification") {
@@ -57,18 +64,13 @@ export default {
           title: "Something went Wrong!!",
           message: "Sorry for inconvenience. Please try again later!.",
           success: false
-        }), { status: 500 });
+        }), { status: 500, headers });
       }
       return new Response(JSON.stringify({
         title: "Thank you!",
         message: "Thank you for contacting me. I will get back to you as soon as possible.",
         success: true
-      }), { status: 200, headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "*",
-        "Access-Control-Allow-Headers": "*",
-      }}
+      }), { status: 200, headers}
       )
 
     }
@@ -80,10 +82,16 @@ export default {
 async function sendTelegramMessage(message: string, TELEGRAM_BOT_TOKEN: string, MY_CHAT_ID: string) {
   const msg = encodeURIComponent(message);
   const endPoint = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${MY_CHAT_ID}&text=${msg}`;
-  return await fetch(endPoint, {
+  const res = await fetch(endPoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
   });
+  const data = await res.text();
+  return new Response(data, {
+    headers,
+    status: res.status,
+  });
+  
 }
 
 function formatMessage({ email, message, subject, clientAddress }: v.InferInput<typeof MessageSchema>): string {
