@@ -72,7 +72,10 @@ export default {
         title: "Thank you!",
         message: "Thank you for contacting me. I will get back to you as soon as possible.",
         success: true
-      }), { status: 200 }
+      }), { status: 200, headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      }}
       )
 
     }
