@@ -24,12 +24,12 @@ export interface Env {
 }
 
 export default {
-	async fetch(request, {MY_CHAT_ID, TELEGRAM_BOT_TOKEN}): Promise<Response> {
+  async fetch(request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }): Promise<Response> {
     if (request.method !== "POST") {
       return new Response(JSON.stringify({ error: "method not allowed" }), { status: 405 });
     }
     const requestData = await request.json();
-    const {success, output: msg, issues} = v.safeParse(Schema, requestData)
+    const { success, output: msg, issues } = v.safeParse(Schema, requestData)
 
     if (!success) {
       return new Response(JSON.stringify(issues.flat()), { status: 400 });
@@ -42,11 +42,27 @@ export default {
     }
 
     if (msg.type === "message") {
-      return await sendTelegramMessage(formatMessage(msg), TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+      const telegramResponse = await sendTelegramMessage(formatMessage(msg), TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+      if (!telegramResponse.ok) {
+        return new Response(JSON.stringify({
+          title: "Something went Wrong!!",
+          message: "Sorry for inconvenience. Please try again later!.",
+          success: false
+        }), { status: 500 });
+      }
+
+
+      return new Response(JSON.stringify({
+        title: "Thank you!",
+        message: "Thank you for contacting me. I will get back to you as soon as possible.",
+        success: true
+      }), { status: 200 }
+      )
+
     }
 
     return new Response(JSON.stringify({ error: "invalid request" }), { status: 400 });
-},
+  },
 } satisfies ExportedHandler<Env>;
 
 async function sendTelegramMessage(message: string, TELEGRAM_BOT_TOKEN: string, MY_CHAT_ID: string) {
@@ -55,12 +71,12 @@ async function sendTelegramMessage(message: string, TELEGRAM_BOT_TOKEN: string, 
   return await fetch(endPoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-  }); 
+  });
 }
 
-function formatMessage({email, message, subject, clientAddress}: v.InferInput<typeof MessageSchema>): string {
+function formatMessage({ email, message, subject, clientAddress }: v.InferInput<typeof MessageSchema>): string {
   return (
-`
+    `
 Subject: ${subject}
 Email: ${email}
 \n\n
