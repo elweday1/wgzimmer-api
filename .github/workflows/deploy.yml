@@ -9,5 +9,5 @@ jobs:
 
             - name: Deploy
               run: |
-                pnpm install 
-                pnpm wrangler deploy
+                npm install 
+                npm run wrangler deploy
