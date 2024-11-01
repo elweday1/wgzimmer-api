@@ -59,8 +59,6 @@ export default {
           success: false
         }), { status: 500 });
       }
-
-
       return new Response(JSON.stringify({
         title: "Thank you!",
         message: "Thank you for contacting me. I will get back to you as soon as possible.",
@@ -68,7 +66,8 @@ export default {
       }), { status: 200, headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Headers": "*",
       }}
       )
 
