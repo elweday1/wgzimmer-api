@@ -8,6 +8,8 @@ jobs:
               uses: actions/checkout@v2
 
             - name: Deploy
+              env:
+                CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
               run: |
                 npm install 
                 npm install -D wrangler
