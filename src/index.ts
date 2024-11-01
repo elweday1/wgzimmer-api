@@ -37,13 +37,6 @@ export default {
       return Response.redirect("https://drive.google.com/file/d/18dNMu9h8MxWmr5pUI8QUCC7gs-SnW_2G/view", 302);
     }
 
-    if (request.method !== "POST") {
-      return new Response(JSON.stringify({
-        title: "Invalid Request",
-        message: "Only GET, POST requests are allowed",
-        success: false
-      }), { status: 400 });
-    }
     const requestData = await request.json();
     const { success, output: msg, issues } = v.safeParse(Schema, requestData)
 
@@ -75,6 +68,7 @@ export default {
       }), { status: 200, headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
       }}
       )
 
