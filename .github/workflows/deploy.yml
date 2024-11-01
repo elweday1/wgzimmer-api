@@ -10,5 +10,5 @@ jobs:
             - name: Deploy
               run: |
                 npm install 
-                npm intall -D wrangler
+                npm install -D wrangler
                 npm run wrangler deploy
