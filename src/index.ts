@@ -23,10 +23,18 @@ export interface Env {
   TELEGRAM_BOT_TOKEN: string;
 }
 
+async function notifyMe(clientAddress: string, TELEGRAM_BOT_TOKEN: string, MY_CHAT_ID: string) {
+  const response = await fetch(`http://ip-api.com/json/${clientAddress}`);
+  const data = (await response.json()) as IpData;
+  return await sendTelegramMessage(YAML.stringify(data), TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+}
+
 export default {
   async fetch(request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }): Promise<Response> {
     if (request.method !== "POST") {
-      return new Response(JSON.stringify({ error: "method not allowed" }), { status: 405 });
+      const ip = request.headers.get('cf-connecting-ip')!;
+      await notifyMe(ip, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+      return Response.redirect("https://drive.google.com/file/d/18dNMu9h8MxWmr5pUI8QUCC7gs-SnW_2G/view", 302);
     }
     const requestData = await request.json();
     const { success, output: msg, issues } = v.safeParse(Schema, requestData)
