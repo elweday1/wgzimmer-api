@@ -2,23 +2,23 @@
 import YAML from 'yaml'
 import * as v from 'valibot'; // 1.24 kB
 
-const MessageSchema = v.object({
+export const MessageSchema = v.object({
   type: v.literal("message"),
   email: v.pipe(v.string(), v.email()),
-  subject: v.pipe(v.string(), v.minLength(50)),
-  message: v.pipe(v.string(), v.minLength(255)),
+  subject: v.pipe(v.string(), v.maxLength(50)),
+  message: v.pipe(v.string(), v.maxLength(255)),
   clientAddress: v.optional(v.string()),
 });
 
-const NotificationSchema = v.object({
+export const NotificationSchema = v.object({
   type: v.literal("notification"),
   clientAddress: v.string(),
 });
 
-const Schema = v.union([MessageSchema, NotificationSchema]);
+export const Schema = v.union([MessageSchema, NotificationSchema]);
 
 
-interface Env {
+export interface Env {
   MY_CHAT_ID: string;
   TELEGRAM_BOT_TOKEN: string;
 }
