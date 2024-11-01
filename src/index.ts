@@ -37,6 +37,14 @@ async function notifyMe(clientAddress: string, TELEGRAM_BOT_TOKEN: string, MY_CH
 
 export default {
   async fetch(request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }): Promise<Response> {
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers,
+        status: 204,
+      });
+    }
+
     if (request.method === "GET") {
       const ip = request.headers.get('cf-connecting-ip')!;
       await notifyMe(ip, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
