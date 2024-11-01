@@ -2,13 +2,6 @@
 import YAML from 'yaml'
 import * as v from 'valibot'; // 1.24 kB
 
-
-const corsHeaders = [
-  ['Access-Control-Allow-Headers', '*'], // What headers are allowed. * is wildcard. Instead of using '*', you can specify a list of specific headers that are allowed, such as: Access-Control-Allow-Headers: X-Requested-With, Content-Type, Accept, Authorization.
-  ['Access-Control-Allow-Methods', 'POST, GET, OPTIONS'], // Allowed methods. Others could be GET, PUT, DELETE etc.
-  ['Access-Control-Allow-Origin', '*'], // This is URLs that are allowed to access the server. * is the wildcard character meaning any URL can.
-]
-
 export const MessageSchema = v.object({
   type: v.literal("message"),
   email: v.pipe(v.string(), v.email()),
@@ -38,9 +31,6 @@ async function notifyMe(clientAddress: string, TELEGRAM_BOT_TOKEN: string, MY_CH
 
 export default {
   async fetch(request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }): Promise<Response> {
-    corsHeaders.forEach(([key, value]) => {
-      request.headers.append(key, value);
-    })
     if (request.method === "GET") {
       const ip = request.headers.get('cf-connecting-ip')!;
       await notifyMe(ip, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
