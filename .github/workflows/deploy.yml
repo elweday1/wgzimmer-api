@@ -11,4 +11,4 @@ jobs:
               run: |
                 npm install 
                 npm install -D wrangler
-                npm run wrangler deploy
+                npm run deploy
