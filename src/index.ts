@@ -51,6 +51,7 @@ const headers = {
   "Access-Control-Allow-Methods": "*",
   "Access-Control-Allow-Headers": "*",
 }
+const twitterBasePost = "https://x.com/intent/post?url="
 
 export interface Env {
   MY_CHAT_ID: string;
@@ -60,11 +61,16 @@ export interface Env {
 async function handleTelegramWebhook(request: Request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }: Env) {
   const updateData = await request.json() as TelegramUpdate;
   if (updateData.message.reply_to_message && updateData.message.from.id === Number(MY_CHAT_ID) ) {
-    await sendTelegramMessage(`this is a reply to 
-      : ${updateData.message.reply_to_message.text}
-      : ${updateData.message.text}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+    await sendTelegramMessage(
+      `${twitterBasePost}${encodeURIComponent(updateData.message.text)}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID
+    );
   }
   return new Response(updateData.message.text, { status: 200 }); 
+}
+
+async function handleRecieveQuestion(request: Request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }: Env) {
+  // store it in db
+
 }
 
 export default {
@@ -80,14 +86,13 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/webhook/telegram" && request.method === "POST") {
-      console.log("telegram webhook called");
       return await handleTelegramWebhook(request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN });
     }
 
     if (url.pathname === "/resume" && request.method === "GET") {
       const {asOrganization, latitude, longitude, country, timezone, continent} = request.cf!;
       const data = YAML.stringify({
-        timestamp: Date.now().toLocaleString(),
+        timestamp: new Date().toISOString(),
         asOrganization, latitude, longitude, country, timezone, continent, 
       })
 
