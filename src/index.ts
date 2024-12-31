@@ -53,7 +53,7 @@ export default {
 
     const url = new URL(request.url);
 
-    if (url.pathname === "/webhook/telegram" && request.method === "GET") {
+    if (url.pathname === "/webhook/telegram" && request.method === "POST") {
       return await handleTelegramWebhook(request);
     }
 
