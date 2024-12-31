@@ -29,10 +29,10 @@ export interface Env {
   TELEGRAM_BOT_TOKEN: string;
 }
 
-async function handleTelegramWebhook(request: Request) {
+async function handleTelegramWebhook(request: Request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }: Env) {
   const updateData = await request.json() as {text: string};
+  await sendTelegramMessage(`you have a new message: ${updateData.text}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
 
-  console.log(updateData.text);
   return new Response(updateData.text, { status: 200 }); 
 }
 
@@ -50,7 +50,7 @@ export default {
 
     if (url.pathname === "/webhook/telegram" && request.method === "POST") {
       console.log("telegram webhook called");
-      return await handleTelegramWebhook(request);
+      return await handleTelegramWebhook(request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN });
     }
 
     if (url.pathname === "/resume" && request.method === "GET") {
