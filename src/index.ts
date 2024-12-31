@@ -30,10 +30,12 @@ export interface Env {
 }
 
 async function handleTelegramWebhook(request: Request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }: Env) {
-  const updateData = await request.json() as {text: string};
-  await sendTelegramMessage(`you have a new message: ${updateData.text}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+  const updateData = await request.json() as {messsage: {text: string}};
+  if (updateData.messsage.text === "hello from telegram") {
+    await sendTelegramMessage(`you have a new message: ${updateData.messsage.text}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+  }
 
-  return new Response(updateData.text, { status: 200 }); 
+  return new Response(updateData.messsage.text, { status: 200 }); 
 }
 
 export default {
