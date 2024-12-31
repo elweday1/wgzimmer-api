@@ -30,8 +30,9 @@ export interface Env {
 }
 
 async function handleTelegramWebhook(request: Request) {
-  const body = await request.json();
-  return new Response(JSON.stringify(body), { status: 200 }); 
+  const body = await request.text();
+  console.log(body);
+  return new Response(body, { status: 200 }); 
 }
 
 export default {
@@ -52,8 +53,13 @@ export default {
     }
 
     if (url.pathname === "/resume" && request.method === "GET") {
-      const ip = request.headers.get('cf-connecting-ip')!;
-      await sendTelegramMessage(YAML.stringify(request.cf), TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+      const {asOrganization, latitude, longitude, country, timezone, continent} = request.cf!;
+      const data = YAML.stringify({
+        timestamp: Date.now().toLocaleString(),
+        asOrganization, latitude, longitude, country, timezone, continent, 
+      })
+
+      await sendTelegramMessage(data, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
       return Response.redirect("https://drive.google.com/file/d/18dNMu9h8MxWmr5pUI8QUCC7gs-SnW_2G/view", 302);
     }
 
