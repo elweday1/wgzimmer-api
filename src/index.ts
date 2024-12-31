@@ -29,17 +29,10 @@ export interface Env {
   TELEGRAM_BOT_TOKEN: string;
 }
 
-async function notifyMe(clientAddress: string, TELEGRAM_BOT_TOKEN: string, MY_CHAT_ID: string) {
-  const response = await fetch(`http://ip-api.com/json/${clientAddress}`);
-  const data = (await response.json()) as IpData;
-  return await sendTelegramMessage(YAML.stringify(data), TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
-}
-
 async function handleTelegramWebhook(request: Request) {
   const body = await request.json();
   return new Response(JSON.stringify(body), { status: 200 }); 
 }
-
 
 export default {
   async fetch(request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }): Promise<Response> {
@@ -60,7 +53,7 @@ export default {
 
     if (url.pathname === "/resume" && request.method === "GET") {
       const ip = request.headers.get('cf-connecting-ip')!;
-      await notifyMe(ip, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+      await sendTelegramMessage(YAML.stringify(request.cf), TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
       return Response.redirect("https://drive.google.com/file/d/18dNMu9h8MxWmr5pUI8QUCC7gs-SnW_2G/view", 302);
     }
 
