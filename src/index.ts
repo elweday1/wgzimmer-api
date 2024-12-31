@@ -52,6 +52,7 @@ const headers = {
   "Access-Control-Allow-Headers": "*",
 }
 const twitterBasePost = "https://x.com/intent/post?url="
+const mySiteLink = "elweday.vercel.app"
 
 export interface Env {
   MY_CHAT_ID: string;
@@ -61,9 +62,10 @@ export interface Env {
 function shareToTwitter(update : TelegramUpdate) {
   const message = `
   => ${update.message.text}
-
   -> ${update.message.reply_to_message?.text || ""}
-  `
+  
+  ${mySiteLink}
+  `.trim();
   return `
   Sharing Link:
   ${twitterBasePost}${encodeURIComponent(message)}`
