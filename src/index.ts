@@ -36,8 +36,8 @@ async function notifyMe(clientAddress: string, TELEGRAM_BOT_TOKEN: string, MY_CH
 }
 
 async function handleTelegramWebhook(request: Request) {
-  const body = await request.text();
-  return new Response(body, { status: 200 }); 
+  const body = await request.json();
+  return new Response(JSON.stringify(body), { status: 200 }); 
 }
 
 
