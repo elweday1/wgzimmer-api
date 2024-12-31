@@ -30,9 +30,10 @@ export interface Env {
 }
 
 async function handleTelegramWebhook(request: Request) {
-  const body = await request.text();
-  console.log(body);
-  return new Response(body, { status: 200 }); 
+  const updateData = await request.json() as {text: string};
+
+  console.log(updateData.text);
+  return new Response(updateData.text, { status: 200 }); 
 }
 
 export default {
