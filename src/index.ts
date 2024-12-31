@@ -44,7 +44,6 @@ async function handleTelegramWebhook(request: Request) {
 
 export default {
   async fetch(request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }): Promise<Response> {
-    console.log(request);
 
     if (request.method === "OPTIONS") {
       return new Response(null, {
@@ -58,12 +57,11 @@ export default {
       return await handleTelegramWebhook(request);
     }
 
-    if (request.method === "GET") {
+    if (url.pathname === "/resume" && request.method === "GET") {
       const ip = request.headers.get('cf-connecting-ip')!;
       await notifyMe(ip, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
       return Response.redirect("https://drive.google.com/file/d/18dNMu9h8MxWmr5pUI8QUCC7gs-SnW_2G/view", 302);
     }
-
 
     const requestData = await request.json();
     const { success, output: msg, issues } = v.safeParse(Schema, requestData)
@@ -124,7 +122,6 @@ Email: ${email}
 ${message}
 `);
 }
-
 type IpData = {
   query: string;
   status: "success" | "fail";
