@@ -62,7 +62,7 @@ async function handleTelegramWebhook(request: Request, { MY_CHAT_ID, TELEGRAM_BO
       shareToTwitter(updateData), TELEGRAM_BOT_TOKEN, MY_CHAT_ID
     );
   }
-  return new Response(updateData.message.text, { status: 200 }); 
+  return new Response(updateData.message.text, { status: 200, headers }); 
 }
 
 async function handleRecieveQuestion(request: Request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }: Env) {
@@ -70,7 +70,7 @@ async function handleRecieveQuestion(request: Request, { MY_CHAT_ID, TELEGRAM_BO
   await sendTelegramMessage(
     `Question Recieved: ${data}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID
   );
-  return Response.redirect("Ok", 200);
+  return new Response("Ok", { status: 200, headers });
 }
 
 async function handleResumeView(request: Request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }: Env) {
