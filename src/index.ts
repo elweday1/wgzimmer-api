@@ -15,6 +15,34 @@ export const NotificationSchema = v.object({
   clientAddress: v.string(),
 });
 
+type TelegramMessage = {
+  message_id: number;
+  date: number;
+  text: string;
+  reply_to_message?: TelegramMessage;
+  chat: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    username: string;
+    type: "private" | "group" | "supergroup" | "channel";
+  };
+  from: {
+    id: number;
+    is_bot: boolean;
+    first_name: string;
+    last_name: string;
+    username: string;
+    language_code: string;
+  };
+};
+
+type TelegramUpdate = {
+  update_id: number;
+  message: TelegramMessage;
+};
+
+
 export const Schema = v.union([MessageSchema, NotificationSchema]);
 
 const headers = {
@@ -30,11 +58,12 @@ export interface Env {
 }
 
 async function handleTelegramWebhook(request: Request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }: Env) {
-  const updateData = await request.json() as {message: {text: string}};
-  if (updateData.message.text === "hello from telegram") {
-    await sendTelegramMessage(`you have a new message: ${updateData.message.text}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
+  const updateData = await request.json() as TelegramUpdate;
+  if (updateData.message.reply_to_message && updateData.message.from.id === Number(MY_CHAT_ID) ) {
+    await sendTelegramMessage(`this is a reply to 
+      : ${updateData.message.reply_to_message.text}
+      : ${updateData.message.text}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
   }
-
   return new Response(updateData.message.text, { status: 200 }); 
 }
 
