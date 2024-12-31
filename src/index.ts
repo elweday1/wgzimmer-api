@@ -35,14 +35,27 @@ async function notifyMe(clientAddress: string, TELEGRAM_BOT_TOKEN: string, MY_CH
   return await sendTelegramMessage(YAML.stringify(data), TELEGRAM_BOT_TOKEN, MY_CHAT_ID);
 }
 
+async function handleTelegramWebhook(request: Request) {
+  const body = await request.json();
+  console.log(body);
+  return new Response("OK", { status: 200 }); 
+}
+
+
 export default {
   async fetch(request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }): Promise<Response> {
+    console.log(request);
 
     if (request.method === "OPTIONS") {
       return new Response(null, {
         headers,
         status: 204,
       });
+    }
+
+    const url = new URL(request.url);
+    if (url.pathname === "/webhook/telegram") {
+      return await handleTelegramWebhook(request);
     }
 
     if (request.method === "GET") {
@@ -111,6 +124,7 @@ Email: ${email}
 ${message}
 `);
 }
+
 type IpData = {
   query: string;
   status: "success" | "fail";
