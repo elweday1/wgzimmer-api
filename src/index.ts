@@ -58,11 +58,25 @@ export interface Env {
   TELEGRAM_BOT_TOKEN: string;
 }
 
+function shareToTwitter(update : TelegramUpdate) {
+  const message = `
+  => ${update.message.text}
+
+  -> ${update.message.reply_to_message?.text || ""}
+  `
+  return `
+  Sharing Link:
+  ${twitterBasePost}${encodeURIComponent(message)}`
+}
+
 async function handleTelegramWebhook(request: Request, { MY_CHAT_ID, TELEGRAM_BOT_TOKEN }: Env) {
   const updateData = await request.json() as TelegramUpdate;
   if (updateData.message.reply_to_message && updateData.message.from.id === Number(MY_CHAT_ID) ) {
     await sendTelegramMessage(
-      `${twitterBasePost}${encodeURIComponent(updateData.message.text)}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID
+      `
+      Reply sent successfully
+      Share on Twitter using the following Link
+      ${shareToTwitter(updateData)}`, TELEGRAM_BOT_TOKEN, MY_CHAT_ID
     );
   }
   return new Response(updateData.message.text, { status: 200 }); 
