@@ -17,6 +17,6 @@
     "wrangler": "^3.60.3"
   },
   "dependencies": {
-    "yaml": "^2.6.0"
+      "cheerio": "^1.0.0-rc.12"
   }
 }
